@@ -1,9 +1,44 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useForm } from "../hooks/useForm";
+import { useState } from "react";
 
 export const RegisterPage = () => {
-  // TODO: Integrar lógica de registro aquí
-  // TODO: Implementar useForm para el manejo del formulario
-  // TODO: Implementar función handleSubmit
+  const { formState, handleChange } = useForm({
+    username: "",
+    email: "",
+    password: "",
+    name: "",
+    lastname: "",
+  });
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+
+  const handleRegister = async (event) => {
+    event.preventDefault(); // evita recarga de página
+    setErrorMessage("");
+
+    try {
+      const respond = await fetch("http://localhost:3000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      });
+
+      const data = await respond.json();
+
+      if (!respond.ok) {
+        setErrorMessage(data.message || "Error al crear la cuenta.");
+        return;
+      }
+
+      navigate("/login");
+    } catch (error) {
+      setErrorMessage("Error de conexión con el servidor.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
@@ -12,14 +47,13 @@ export const RegisterPage = () => {
           Crear Cuenta
         </h2>
 
-        {/* TODO: Mostrar este div cuando haya error */}
-        <div className="hidden bg-red-100 text-red-700 p-3 rounded mb-4">
-          <p className="text-sm">
-            Error al crear la cuenta. Intenta nuevamente.
-          </p>
-        </div>
+        {errorMessage && (
+          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+            <p className="text-sm">{errorMessage}</p>
+          </div>
+        )}
 
-        <form onSubmit={(event) => {}}>
+        <form onSubmit={handleRegister}>
           <div className="mb-4">
             <label
               htmlFor="username"
@@ -31,6 +65,8 @@ export const RegisterPage = () => {
               type="text"
               id="username"
               name="username"
+              value={formState.username}
+              onChange={handleChange}
               placeholder="Elige un nombre de usuario"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
@@ -48,6 +84,8 @@ export const RegisterPage = () => {
               type="email"
               id="email"
               name="email"
+              value={formState.email}
+              onChange={handleChange}
               placeholder="tu@email.com"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
@@ -65,6 +103,8 @@ export const RegisterPage = () => {
               type="password"
               id="password"
               name="password"
+              value={formState.password}
+              onChange={handleChange}
               placeholder="Crea una contraseña segura"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
@@ -82,6 +122,8 @@ export const RegisterPage = () => {
               type="text"
               id="name"
               name="name"
+              value={formState.name}
+              onChange={handleChange}
               placeholder="Tu nombre"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
@@ -99,6 +141,8 @@ export const RegisterPage = () => {
               type="text"
               id="lastname"
               name="lastname"
+              value={formState.lastname}
+              onChange={handleChange}
               placeholder="Tu apellido"
               className="w-full border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
