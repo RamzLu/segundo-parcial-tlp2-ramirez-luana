@@ -30,8 +30,27 @@ export const Navbar = () => {
   useEffect(() => {
     fetchUser();
   }, []);
+
   const userName = user?.name; // TODO: Reemplazar con el nombre real del usuario obtenido de /api/profile
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al hacer logout");
+      }
+
+      alert("Sesión cerrada");
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+      alert("Ocurrió un error");
+    }
+  };
   return (
     <nav className="bg-gray-900 text-white h-16 left-0 right-0 shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
@@ -44,9 +63,8 @@ export const Navbar = () => {
           </span>
 
           <button
-            onClick={() => {
-              // TODO: Implementar handleLogout aquí
-            }}
+            // TODO: Implementar handleLogout aquí
+            onClick={handleLogout}
             className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition-colors font-medium"
           >
             Cerrar Sesión
