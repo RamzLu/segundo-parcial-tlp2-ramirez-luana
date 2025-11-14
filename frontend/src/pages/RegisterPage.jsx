@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router";
 import { useForm } from "../hooks/useForm";
 import { useState } from "react";
+import { Loading } from "../components/Loading";
 
 export const RegisterPage = () => {
   const { formState, handleChange } = useForm({
@@ -11,13 +12,11 @@ export const RegisterPage = () => {
     lastname: "",
   });
 
-  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleRegister = async (event) => {
     event.preventDefault(); // evita recarga de página
-    setErrorMessage("");
-
+    setIsLoading(true);
     try {
       const respond = await fetch("http://localhost:3000/api/register", {
         method: "POST",
@@ -30,13 +29,14 @@ export const RegisterPage = () => {
       const data = await respond.json();
 
       if (!respond.ok) {
-        setErrorMessage(data.message || "Error al crear la cuenta.");
-        return;
+        return alert(data.message);
       }
 
       navigate("/login");
     } catch (error) {
-      setErrorMessage("Error de conexión con el servidor.");
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -46,12 +46,6 @@ export const RegisterPage = () => {
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Crear Cuenta
         </h2>
-
-        {errorMessage && (
-          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
-            <p className="text-sm">{errorMessage}</p>
-          </div>
-        )}
 
         <form onSubmit={handleRegister}>
           <div className="mb-4">
@@ -151,9 +145,10 @@ export const RegisterPage = () => {
 
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded transition-colors"
           >
-            Registrarse
+            {isLoading ? <Loading /> : "Registrarse"}
           </button>
         </form>
 
