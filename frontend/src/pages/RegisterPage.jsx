@@ -31,7 +31,7 @@ export const RegisterPage = () => {
       if (!respond.ok) {
         return alert(data.message);
       }
-
+      alert(data.message);
       navigate("/login");
     } catch (error) {
       console.log(error);
