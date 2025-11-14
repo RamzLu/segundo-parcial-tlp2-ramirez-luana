@@ -1,20 +1,21 @@
 import { Link, useNavigate } from "react-router";
 import { useForm } from "../hooks/useForm";
 import { useState } from "react";
+import { Loading } from "../components/Loading";
 
 export const LoginPage = () => {
   const { formState, handleChange } = useForm({
     username: "",
     password: "",
   });
-
+  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
     setErrorMessage("");
-
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:3000/api/login", {
         method: "POST",
@@ -36,6 +37,8 @@ export const LoginPage = () => {
       navigate("/home");
     } catch (error) {
       setErrorMessage("Error al conectar con el servidor.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,9 +96,10 @@ export const LoginPage = () => {
 
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded transition-colors"
           >
-            Ingresar
+            {isLoading ? <Loading /> : "Ingresar"}
           </button>
         </form>
 
