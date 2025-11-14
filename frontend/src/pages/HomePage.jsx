@@ -64,6 +64,7 @@ export const HomePage = () => {
   const fetchUser = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/profile", {
+        method: "GET",
         credentials: "include",
       });
       if (!response.ok) {
